@@ -1,76 +1,116 @@
-# TODO App Frontend
+# TODO App – Frontend
 
-Frontend část jednoduché TODO aplikace vytvořená v Reactu a Tailwind CSS.  
-Aplikace komunikuje s ASP.NET Core Web API backendem a umožňuje načítání, vytváření, úpravu a mazání úkolů.
+React frontend pro plnohodnotnou TODO aplikaci s autentizací uživatelů. Komunikuje s [TODOApp.Backend](https://github.com/JanStefko/TODOApp.Backend) (ASP.NET Core 8 Web API) přes JWT.
 
-## Funkce
+🌐 **Live demo:** [todo.janstefko.cz](https://todo.janstefko.cz)
 
-- Zobrazení seznamu úkolů z API
-- Přidání nového úkolu
-- Označení úkolu jako dokončený
-- Smazání úkolu
-- Automatické řazení dokončených úkolů na konec seznamu
-- Přehledový header s počty úkolů
+> ⏱️ První návštěva po nečinnosti může trvat 30-60 sekund – backend běží na Azure free tieru s auto-pause databází a cold-start App Service.
 
-## Použité technologie
+---
 
-- React
-- Vite
-- Tailwind CSS
-- JavaScript
-- Fetch API
+## 📸 Screenshots
 
-## Spuštění projektu
+| Přihlášení | Registrace |
+|---|---|
+| ![Login](docs/screenshots/login.jpg) | ![Register](docs/screenshots/register.jpg) |
 
-1. Naklonuj repozitář:
-   ```bash
-   git clone https://github.com/JanStefko/TODOApp.Frontend.git
-   ```
+| Seznam úkolů |
+|---|
+| ![Todos](docs/screenshots/todos.jpg) |
 
-2. Přejdi do složky projektu:
-   ```bash
-   cd TODOApp.Frontend
-   ```
+---
 
-3. Nainstaluj závislosti:
-   ```bash
-   npm install
-   ```
+## ✨ Funkce
 
-4. Vytvoř `.env` soubor v kořeni projektu a nastav:
-   ```env
-   VITE_API_BASE_URL=https://localhost:7085/api
-   ```
+- **Registrace a přihlášení** uživatelů přes JWT
+- **CRUD operace** nad úkoly (vytvoření, označení dokončeného, mazání)
+- **Izolace dat** – každý uživatel vidí jen své úkoly
+- **Persistence přihlášení** přes localStorage (přežije F5)
+- **Auto-redirect** na login při expiraci tokenu
+- **Protected routes** – nepřihlášený uživatel se nedostane k úkolům
+- **Responsivní UI** – funguje na desktopu i mobilu
 
-5. Spusť vývojový server:
-   ```bash
-   npm run dev
-   ```
+---
 
-## Backend
+## 🛠️ Tech stack
 
-Tento frontend vyžaduje spuštěný backend projekt ASP.NET Core Web API.  
-Frontend očekává dostupné API endpointy pro TODO položky na adrese definované v `.env`.
+- **React 19** – knihovna pro UI
+- **Vite 8** – build tool a dev server
+- **React Router 7** – client-side routing
+- **Tailwind CSS 4** – utility-first styling
+- **Fetch API** – komunikace s backendem (vlastní wrapper s JWT auto-injekcí)
+- **localStorage** – perzistence tokenu
+- **Context API** – sdílení auth stavu napříč aplikací
 
-## Struktura projektu
+---
+
+## 🏗️ Architektura
 
 ```text
 src/
-  components/
-    Header.jsx
-    TodoForm.jsx
-    TodoItem.jsx
-    TodoList.jsx
-  App.jsx
-  main.jsx
+├── api/
+│   └── apiFetch.js          # Fetch wrapper s automatickým Authorization headerem
+├── context/
+│   └── AuthContext.jsx      # Globální auth state (token, login, logout)
+├── components/
+│   ├── Header.jsx
+│   ├── ProtectedRoute.jsx   # Hlídá přístup k chráněným stránkám
+│   ├── TodoForm.jsx
+│   ├── TodoItem.jsx
+│   └── TodoList.jsx
+├── pages/
+│   ├── Login.jsx
+│   ├── Register.jsx
+│   └── Todos.jsx
+├── App.jsx                  # Routing a auth guard
+└── main.jsx
 ```
 
-## Poznámky
+---
 
-- `.env` není součástí repozitáře.
-- Před spuštěním frontend aplikace musí běžet backend API.
-- Pokud změníš `.env`, restartuj `npm run dev`.
+## 🚀 Lokální vývoj
 
-## Stav projektu
+### Předpoklady
 
-MVP je hotové a aplikace aktuálně podporuje základní CRUD operace nad TODO položkami.
+- Node.js 20+
+- Spuštěný [TODOApp.Backend](https://github.com/JanStefko/TODOApp.Backend)
+
+### Postup
+
+```bash
+# Klonování
+git clone https://github.com/JanStefko/TODOApp.Frontend.git
+cd TODOApp.Frontend
+
+# Instalace závislostí
+npm install
+
+# Konfigurace API URL
+# Vytvoř soubor .env v root projektu:
+echo "VITE_API_BASE_URL=https://localhost:7085/api" > .env
+
+# Spuštění dev serveru
+npm run dev
+```
+
+Aplikace poběží na `http://localhost:5173`.
+
+---
+
+## 🌐 Nasazení
+
+Aplikace je nasazena na **Azure Static Web Apps** s vlastní subdoménou přes Azure DNS.
+
+- **Hosting:** Azure Static Web Apps (Free tier)
+- **Doména:** `todo.janstefko.cz` (CNAME → Azure SWA)
+- **HTTPS:** automatický přes Azure
+- **CI/CD:** GitHub Actions – auto-deploy při pushi do `main`
+
+Build konfigurace pro produkci je v `.env.production`.
+
+---
+
+## 🔗 Související
+
+- **Backend:** [TODOApp.Backend](https://github.com/JanStefko/TODOApp.Backend)
+- **Live aplikace:** [todo.janstefko.cz](https://todo.janstefko.cz)
